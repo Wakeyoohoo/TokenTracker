@@ -1,0 +1,376 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000001 /* TokenTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000001; };
+		A10000002 /* UsageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000002; };
+		A10000003 /* ProviderConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000003; };
+		A10000004 /* UsageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000004; };
+		A10000005 /* ProviderRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000005; };
+		A10000006 /* OpenAIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000006; };
+		A10000007 /* DeepSeekProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000007; };
+		A10000008 /* MiniMaxProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000008; };
+		A10000009 /* AnthropicProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000009; };
+		A10000010 /* GeminiProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000010; };
+		A10000011 /* CustomProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000011; };
+		A10000012 /* ConfigFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000012; };
+		A10000013 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000013; };
+		A10000014 /* TokenTrackerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000014; };
+		A10000015 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000015; };
+		A10000016 /* ProviderCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000016; };
+		A10000017 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000017; };
+		A10000018 /* AddProviderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000018; };
+		A10000019 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000019; };
+		A10000020 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10000020; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C10000001 /* TokenTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TokenTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000001 /* TokenTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenTrackerApp.swift; sourceTree = "<group>"; };
+		B10000002 /* UsageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageData.swift; sourceTree = "<group>"; };
+		B10000003 /* ProviderConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderConfig.swift; sourceTree = "<group>"; };
+		B10000004 /* UsageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageProvider.swift; sourceTree = "<group>"; };
+		B10000005 /* ProviderRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderRegistry.swift; sourceTree = "<group>"; };
+		B10000006 /* OpenAIProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIProvider.swift; sourceTree = "<group>"; };
+		B10000007 /* DeepSeekProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepSeekProvider.swift; sourceTree = "<group>"; };
+		B10000008 /* MiniMaxProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniMaxProvider.swift; sourceTree = "<group>"; };
+		B10000009 /* AnthropicProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnthropicProvider.swift; sourceTree = "<group>"; };
+		B10000010 /* GeminiProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiProvider.swift; sourceTree = "<group>"; };
+		B10000011 /* CustomProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomProvider.swift; sourceTree = "<group>"; };
+		B10000012 /* ConfigFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigFileManager.swift; sourceTree = "<group>"; };
+		B10000013 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
+		B10000014 /* TokenTrackerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenTrackerViewModel.swift; sourceTree = "<group>"; };
+		B10000015 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		B10000016 /* ProviderCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderCardView.swift; sourceTree = "<group>"; };
+		B10000017 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B10000018 /* AddProviderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProviderView.swift; sourceTree = "<group>"; };
+		B10000019 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		B10000020 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B10000021 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D10000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E10000001 = {
+			isa = PBXGroup;
+			children = (
+				E10000002 /* TokenTracker */,
+				E10000009 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E10000002 /* TokenTracker */ = {
+			isa = PBXGroup;
+			children = (
+				B10000001 /* TokenTrackerApp.swift */,
+				E10000003 /* Models */,
+				E10000004 /* Providers */,
+				E10000005 /* Storage */,
+				E10000006 /* ViewModels */,
+				E10000007 /* Views */,
+				E10000008 /* Utilities */,
+				B10000020 /* Assets.xcassets */,
+				B10000021 /* Info.plist */,
+			);
+			path = TokenTracker;
+			sourceTree = "<group>";
+		};
+		E10000003 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B10000002 /* UsageData.swift */,
+				B10000003 /* ProviderConfig.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E10000004 /* Providers */ = {
+			isa = PBXGroup;
+			children = (
+				B10000004 /* UsageProvider.swift */,
+				B10000005 /* ProviderRegistry.swift */,
+				B10000006 /* OpenAIProvider.swift */,
+				B10000007 /* DeepSeekProvider.swift */,
+				B10000008 /* MiniMaxProvider.swift */,
+				B10000009 /* AnthropicProvider.swift */,
+				B10000010 /* GeminiProvider.swift */,
+				B10000011 /* CustomProvider.swift */,
+			);
+			path = Providers;
+			sourceTree = "<group>";
+		};
+		E10000005 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				B10000012 /* ConfigFileManager.swift */,
+				B10000013 /* KeychainHelper.swift */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		E10000006 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				B10000014 /* TokenTrackerViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		E10000007 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B10000015 /* MenuBarView.swift */,
+				B10000016 /* ProviderCardView.swift */,
+				B10000017 /* SettingsView.swift */,
+				B10000018 /* AddProviderView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E10000008 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				B10000019 /* Extensions.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		E10000009 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C10000001 /* TokenTracker.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F10000001 /* TokenTracker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = G10000003 /* Build configuration list for PBXNativeTarget "TokenTracker" */;
+			buildPhases = (
+				F10000002 /* Sources */,
+				F10000003 /* Resources */,
+				D10000001 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TokenTracker;
+			productName = TokenTracker;
+			productReference = C10000001 /* TokenTracker.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		H10000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+			};
+			buildConfigurationList = G10000001 /* Build configuration list for PBXProject "TokenTracker" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = E10000001;
+			productRefGroup = E10000009 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F10000001 /* TokenTracker */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F10000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000020 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F10000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000001 /* TokenTrackerApp.swift in Sources */,
+				A10000002 /* UsageData.swift in Sources */,
+				A10000003 /* ProviderConfig.swift in Sources */,
+				A10000004 /* UsageProvider.swift in Sources */,
+				A10000005 /* ProviderRegistry.swift in Sources */,
+				A10000006 /* OpenAIProvider.swift in Sources */,
+				A10000007 /* DeepSeekProvider.swift in Sources */,
+				A10000008 /* MiniMaxProvider.swift in Sources */,
+				A10000009 /* AnthropicProvider.swift in Sources */,
+				A10000010 /* GeminiProvider.swift in Sources */,
+				A10000011 /* CustomProvider.swift in Sources */,
+				A10000012 /* ConfigFileManager.swift in Sources */,
+				A10000013 /* KeychainHelper.swift in Sources */,
+				A10000014 /* TokenTrackerViewModel.swift in Sources */,
+				A10000015 /* MenuBarView.swift in Sources */,
+				A10000016 /* ProviderCardView.swift in Sources */,
+				A10000017 /* SettingsView.swift in Sources */,
+				A10000018 /* AddProviderView.swift in Sources */,
+				A10000019 /* Extensions.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		G10000004 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		G10000005 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		G10000006 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TokenTracker/Info.plist;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tokentracker.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		G10000007 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TokenTracker/Info.plist;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tokentracker.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		G10000001 /* Build configuration list for PBXProject "TokenTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G10000004 /* Debug */,
+				G10000005 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		G10000003 /* Build configuration list for PBXNativeTarget "TokenTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G10000006 /* Debug */,
+				G10000007 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = H10000001 /* Project object */;
+}

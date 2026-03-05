@@ -1,0 +1,12 @@
+.DS_Store
+build/
+DerivedData/
+*.xcuserstate
+*.xcuserdatad
+xcuserdata/
+TokenTracker.xcodeproj/project.xcworkspace/xcuserdata/
+TokenTracker.xcodeproj/xcuserdata/
+*.app
+*.dSYM
+dist/
+*.log
