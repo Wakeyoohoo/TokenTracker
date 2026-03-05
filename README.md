@@ -12,7 +12,7 @@ TokenTracker 是一款 macOS 菜单栏应用，用于聚合查询和展示各 AI
 
 - **菜单栏常驻** - 点击顶部菜单栏图标快速查看各平台消耗情况
 - **多平台支持** - 支持 OpenAI、DeepSeek、MiniMax、Anthropic、Gemini 等主流模型提供商
-- **安全存储** - API Key 加密存储在 macOS Keychain 中
+- **本地存储** - API Key 存储在本地配置中
 - **自定义 Provider** - 支持通过配置添加任意第三方 API
 - **后台轮询** - 支持自定义刷新频率和开机自启
 
@@ -23,8 +23,6 @@ TokenTracker 是一款 macOS 菜单栏应用，用于聚合查询和展示各 AI
 | OpenAI | ✅ |
 | DeepSeek | ✅ |
 | MiniMax | ✅ |
-| Anthropic | ✅ |
-| Gemini | ✅ |
 | 自定义 API | ✅ |
 
 ## 环境要求
