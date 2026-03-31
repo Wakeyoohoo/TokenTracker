@@ -21,6 +21,7 @@ struct UsageData: Codable, Identifiable {
     var usedAmount: Double?       // Amount used
     var remainingBalance: Double? // Remaining balance
     var refreshExpiryTimestamp: TimeInterval? = nil  // Expiry unix timestamp (seconds)
+    var weeklyRefreshExpiryTimestamp: TimeInterval? = nil  // Weekly reset expiry unix timestamp
     
     /// Computed usage percentage (0.0 ~ 1.0)
     var usagePercentage: Double? {
@@ -58,6 +59,7 @@ struct UsageData: Codable, Identifiable {
             usedAmount: nil,
             remainingBalance: nil,
             refreshExpiryTimestamp: nil,
+            weeklyRefreshExpiryTimestamp: nil,
             modelBreakdown: [],
             fetchedAt: Date(),
             errorMessage: nil,
@@ -83,4 +85,5 @@ struct ModelUsage: Codable, Identifiable {
     var totalQuota: Double? // For model-specific quotas, like MiniMax
     var remainingQuota: Double? // Remaining quota for providers that expose model-level remains
     var refreshExpiryTimestamp: TimeInterval? = nil // Model-level expiry unix timestamp (seconds)
+    var weeklyRefreshExpiryTimestamp: TimeInterval? = nil // Model-level weekly reset unix timestamp
 }

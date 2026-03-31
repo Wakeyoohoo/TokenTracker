@@ -132,6 +132,7 @@ struct AddProviderView: View {
             iconName: iconName,
             brandColorHex: brandColorHex,
             isEnabled: true,
+            showInStatusBar: true,
             apiKey: apiKey,
             providerType: .custom,
             endpointConfig: endpointConfig,

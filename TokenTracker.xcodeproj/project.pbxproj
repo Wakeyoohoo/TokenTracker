@@ -18,6 +18,7 @@
 		A10000009 /* AnthropicProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000009; };
 		A10000010 /* GeminiProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000010; };
 		A10000011 /* CustomProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000011; };
+		A10000022 /* ClaudeCLIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000022; };
 		A10000012 /* ConfigFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000012; };
 		A10000013 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000013; };
 		A10000014 /* TokenTrackerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000014; };
@@ -42,6 +43,7 @@
 		B10000009 /* AnthropicProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnthropicProvider.swift; sourceTree = "<group>"; };
 		B10000010 /* GeminiProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiProvider.swift; sourceTree = "<group>"; };
 		B10000011 /* CustomProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomProvider.swift; sourceTree = "<group>"; };
+		B10000022 /* ClaudeCLIProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeCLIProvider.swift; sourceTree = "<group>"; };
 		B10000012 /* ConfigFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigFileManager.swift; sourceTree = "<group>"; };
 		B10000013 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
 		B10000014 /* TokenTrackerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenTrackerViewModel.swift; sourceTree = "<group>"; };
@@ -109,6 +111,7 @@
 				B10000009 /* AnthropicProvider.swift */,
 				B10000010 /* GeminiProvider.swift */,
 				B10000011 /* CustomProvider.swift */,
+				B10000022 /* ClaudeCLIProvider.swift */,
 			);
 			path = Providers;
 			sourceTree = "<group>";
@@ -232,6 +235,7 @@
 				A10000009 /* AnthropicProvider.swift in Sources */,
 				A10000010 /* GeminiProvider.swift in Sources */,
 				A10000011 /* CustomProvider.swift in Sources */,
+				A10000022 /* ClaudeCLIProvider.swift in Sources */,
 				A10000012 /* ConfigFileManager.swift in Sources */,
 				A10000013 /* KeychainHelper.swift in Sources */,
 				A10000014 /* TokenTrackerViewModel.swift in Sources */,

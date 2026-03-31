@@ -57,6 +57,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         viewModel.$usageData.sink { [weak self] _ in
             self?.updateTitle()
         }.store(in: &cancellables)
+
+        // Listen to showStatusBar changes
+        viewModel.onShowStatusBarChanged = { [weak self] show in
+            self?.updateStatusBarVisibility(show: show)
+        }
+
+        // Initial visibility
+        updateStatusBarVisibility(show: viewModel.showStatusBar)
+    }
+
+    private func updateStatusBarVisibility(show: Bool) {
+        statusItem.isVisible = show
     }
     
     func updateTitle() {

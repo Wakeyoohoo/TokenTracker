@@ -1,6 +1,6 @@
 # TokenTracker
 
-TokenTracker 是一款原生的 macOS 状态栏应用，用于聚合查询和统一展示各个 AI 平台的 API Token 用量和额度（支持 OpenAI, DeepSeek, MiniMax 等，并可通过可配置的插件系统接入任何自定义的 API 平台）。
+TokenTracker 是一款原生的 macOS 状态栏应用，用于聚合查询和统一展示各个 AI 平台的 API Token 用量和额度（支持 OpenAI, Anthropic (Claude), DeepSeek, MiniMax 等，并可通过可配置的插件系统接入任何自定义的 API 平台）。
 
 ## 核心功能介绍
 
@@ -67,6 +67,11 @@ open /Users/wakeyoo/Library/Developer/Xcode/DerivedData/TokenTracker-fjxhpvrukxc
 3. 在左侧的 **Providers** 列表中，找到你需要启用的平台，打开右上角的开关。
 4. 填入对应的 `API Key`，点击 **测试连接**。若看到绿色的“已连接 ✓”，则说明配置成功。
 5. 如需添加系统**未内置**的提供商（如第三方聚合 API 站），你可以点击左下角的 `+ 添加自定义`，跟随表单填写 URL 和字段映射。在 `General` 面板还可以查看到底层的自定义配置文件存储目录。
+
+7. **Claude.ai (Web Session) 特殊说明**：
+   - 对于没有 API Key 的 Claude Pro 用户，可以选择 `Claude.ai (Web)` 提供商。
+   - 在 `API Key` 输入框中填入你从浏览器开发者工具中获取的 `session_key` Cookie。
+   - 获取方法：登录 `claude.ai` -> 打开开发者工具 (F12) -> Application -> Cookies -> 复制 `session_key` 的值。
 
 ## 退出应用
 当你需要关闭应用时：

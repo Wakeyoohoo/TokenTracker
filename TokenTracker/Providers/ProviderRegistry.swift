@@ -13,6 +13,8 @@ final class ProviderRegistry {
         register(MiniMaxProvider())
         register(AnthropicProvider())
         register(GeminiProvider())
+        register(ClaudeWebProvider())
+        register(ClaudeCLIProvider())
         register(CustomProvider())
     }
     
@@ -43,6 +45,7 @@ final class ProviderRegistry {
             iconName: "brain.head.profile",
             brandColorHex: "#10A37F",
             isEnabled: false,
+            showInStatusBar: true,
             apiKey: "",
             providerType: .openAI,
             endpointConfig: nil,
@@ -54,6 +57,7 @@ final class ProviderRegistry {
             iconName: "magnifyingglass.circle",
             brandColorHex: "#4D6BFE",
             isEnabled: false,
+            showInStatusBar: true,
             apiKey: "",
             providerType: .deepSeek,
             endpointConfig: nil,
@@ -65,10 +69,59 @@ final class ProviderRegistry {
             iconName: "waveform",
             brandColorHex: "#8B5CF6",
             isEnabled: false,
+            showInStatusBar: true,
             apiKey: "",
             providerType: .miniMax,
             endpointConfig: nil,
             isBuiltIn: true
         ),
+        ProviderConfig(
+            id: "anthropic",
+            displayName: "Anthropic (Claude)",
+            iconName: "sparkle",
+            brandColorHex: "#D4A574",
+            isEnabled: false,
+            showInStatusBar: true,
+            apiKey: "",
+            providerType: .anthropic,
+            endpointConfig: nil,
+            isBuiltIn: true
+        ),
+        ProviderConfig(
+            id: "gemini",
+            displayName: "Google Gemini",
+            iconName: "diamond",
+            brandColorHex: "#4285F4",
+            isEnabled: false,
+            showInStatusBar: true,
+            apiKey: "",
+            providerType: .gemini,
+            endpointConfig: nil,
+            isBuiltIn: true
+        ),
+        ProviderConfig(
+            id: "claude-web",
+            displayName: "Claude.ai (Web)",
+            iconName: "person.badge.shield.checkmark",
+            brandColorHex: "#D4A574",
+            isEnabled: false,
+            showInStatusBar: true,
+            apiKey: "",
+            providerType: .claudeWeb,
+            endpointConfig: nil,
+            isBuiltIn: true
+        ),
+        ProviderConfig(
+            id: "claude-cli",
+            displayName: "Claude CLI",
+            iconName: "terminal",
+            brandColorHex: "#D4A574",
+            isEnabled: false,
+            showInStatusBar: true,
+            apiKey: "",
+            providerType: .claudeCLI,
+            endpointConfig: nil,
+            isBuiltIn: true
+        )
     ]
 }

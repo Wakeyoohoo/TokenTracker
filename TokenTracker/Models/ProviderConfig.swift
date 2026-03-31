@@ -8,6 +8,8 @@ struct ProviderConfig: Codable, Identifiable, Equatable {
     var iconName: String        // SF Symbol name
     var brandColorHex: String   // Hex color like "#10A37F"
     var isEnabled: Bool
+    /// Whether to show this provider in the status bar
+    var showInStatusBar: Bool
     var apiKey: String
     
     /// Provider type determines how usage data is fetched
@@ -35,7 +37,9 @@ enum ProviderType: String, Codable, CaseIterable {
     case miniMax = "minimax"
     case gemini = "gemini"
     case custom = "custom"      // User-defined generic provider
-    
+    case claudeWeb = "claudeweb" // Claude.ai web session
+    case claudeCLI = "claudec"   // Claude CLI (claude status --json)
+
     var defaultDisplayName: String {
         switch self {
         case .openAI: return "OpenAI"
@@ -44,9 +48,11 @@ enum ProviderType: String, Codable, CaseIterable {
         case .miniMax: return "MiniMax"
         case .gemini: return "Google Gemini"
         case .custom: return "Custom"
+        case .claudeWeb: return "Claude.ai (Web)"
+        case .claudeCLI: return "Claude CLI"
         }
     }
-    
+
     var defaultIconName: String {
         switch self {
         case .openAI: return "brain.head.profile"
@@ -55,6 +61,8 @@ enum ProviderType: String, Codable, CaseIterable {
         case .miniMax: return "waveform"
         case .gemini: return "diamond"
         case .custom: return "puzzlepiece"
+        case .claudeWeb: return "person.badge.shield.checkmark"
+        case .claudeCLI: return "terminal"
         }
     }
     
@@ -66,14 +74,16 @@ enum ProviderType: String, Codable, CaseIterable {
         case .miniMax: return "#8B5CF6"
         case .gemini: return "#4285F4"
         case .custom: return "#6B7280"
+        case .claudeWeb: return "#D4A574"
+        case .claudeCLI: return "#D4A574"
         }
     }
     
     var supportsAutoFetch: Bool {
         switch self {
-        case .openAI, .deepSeek, .miniMax, .custom:
+        case .openAI, .deepSeek, .miniMax, .custom, .anthropic, .claudeWeb, .claudeCLI:
             return true
-        case .anthropic, .gemini:
+        case .gemini:
             return false
         }
     }

@@ -13,10 +13,23 @@ final class TokenTrackerViewModel: ObservableObject {
     @Published var showSettings = false
     @Published var showAddProvider = false
     
+    /// Cached menu bar title to avoid expensive recalculations
+    private var cachedMenuBarTitle: String = "TT"
+    private var needsTitleUpdate = true
+    private var lastRefreshAttempt = Date.distantPast
+    
     /// Polling interval in seconds
     @AppStorage("pollingInterval") var pollingInterval: TimeInterval = 300  // 5 minutes
     @AppStorage("launchAtLogin") var launchAtLogin: Bool = false
-    
+    @AppStorage("showStatusBar") var showStatusBar: Bool = true {
+        didSet {
+            onShowStatusBarChanged?(showStatusBar)
+        }
+    }
+
+    /// Callback for status bar visibility changes (set by AppDelegate)
+    var onShowStatusBarChanged: ((Bool) -> Void)?
+
     private var pollingTimer: Timer?
     private let registry = ProviderRegistry.shared
     private let configManager = ConfigFileManager.shared
@@ -26,7 +39,12 @@ final class TokenTrackerViewModel: ObservableObject {
     var enabledProviders: [ProviderConfig] {
         providers.filter { $0.isEnabled }
     }
-    
+
+    /// Providers that are enabled AND showInStatusBar is true
+    var statusBarProviders: [ProviderConfig] {
+        providers.filter { $0.isEnabled && $0.showInStatusBar }
+    }
+
     var totalCost: Double {
         enabledProviders.compactMap { usageData[$0.id]?.cost }.reduce(0, +)
     }
@@ -36,7 +54,18 @@ final class TokenTrackerViewModel: ObservableObject {
     }
     
     var menuBarTitle: String {
-        if enabledProviders.isEmpty {
+        if !needsTitleUpdate {
+            return cachedMenuBarTitle
+        }
+        
+        let newTitle = calculateMenuBarTitle()
+        cachedMenuBarTitle = newTitle
+        needsTitleUpdate = false
+        return newTitle
+    }
+    
+    private func calculateMenuBarTitle() -> String {
+        if statusBarProviders.isEmpty {
             return "TT"
         }
 
@@ -49,7 +78,7 @@ final class TokenTrackerViewModel: ObservableObject {
             let detailWidth: Int
         }
 
-        let allBlocks: [MenuBlock] = enabledProviders.compactMap { config in
+        let allBlocks: [MenuBlock] = statusBarProviders.compactMap { config in
             guard let usage = usageData[config.id] else { return nil }
 
             let providerRows = menuBarProviderRows(for: menuBarProviderCode(for: config))
@@ -67,20 +96,7 @@ final class TokenTrackerViewModel: ObservableObject {
             )
         }
 
-        let maxVisibleBlocks = 2
-        var blocks = Array(allBlocks.prefix(maxVisibleBlocks))
-        if allBlocks.count > maxVisibleBlocks, let last = blocks.last {
-            let hiddenCount = allBlocks.count - maxVisibleBlocks
-            let topDetail = last.topDetail + " +\(hiddenCount)"
-            blocks[blocks.count - 1] = MenuBlock(
-                providerTop: last.providerTop,
-                providerBottom: last.providerBottom,
-                topDetail: topDetail,
-                bottomDetail: last.bottomDetail,
-                providerWidth: last.providerWidth,
-                detailWidth: max(topDetail.count, last.bottomDetail.count)
-            )
-        }
+        let blocks = allBlocks
 
         guard !blocks.isEmpty else { return "TT" }
         let blockSeparator = "  "
@@ -140,6 +156,7 @@ final class TokenTrackerViewModel: ObservableObject {
         let trimmedCurrency = currency.trimmingCharacters(in: .whitespacesAndNewlines)
         let isCurrency = !trimmedCurrency.isEmpty
             && trimmedCurrency != "Tokens"
+            && trimmedCurrency != "Percent"
             && !trimmedCurrency.contains("单位")
             && !trimmedCurrency.contains("额度")
 
@@ -188,10 +205,14 @@ final class TokenTrackerViewModel: ObservableObject {
         // Start with built-in providers
         var allConfigs = ProviderRegistry.builtInConfigs
         
-        // Load saved state (enabled/disabled, API keys)
+        // Load saved state (enabled/disabled, API keys, status bar visibility)
         for i in 0..<allConfigs.count {
             let id = allConfigs[i].id
             allConfigs[i].isEnabled = UserDefaults.standard.bool(forKey: "provider_\(id)_enabled")
+            // showInStatusBar defaults to true, only override if explicitly saved
+            if UserDefaults.standard.object(forKey: "provider_\(id)_showInStatusBar") != nil {
+                allConfigs[i].showInStatusBar = UserDefaults.standard.bool(forKey: "provider_\(id)_showInStatusBar")
+            }
             allConfigs[i].apiKey = APIKeyStore.shared.read(for: id) ?? ""
         }
         
@@ -200,10 +221,14 @@ final class TokenTrackerViewModel: ObservableObject {
         for var custom in customProviders {
             custom.apiKey = APIKeyStore.shared.read(for: custom.id) ?? ""
             custom.isEnabled = UserDefaults.standard.bool(forKey: "provider_\(custom.id)_enabled")
+            if UserDefaults.standard.object(forKey: "provider_\(custom.id)_showInStatusBar") != nil {
+                custom.showInStatusBar = UserDefaults.standard.bool(forKey: "provider_\(custom.id)_showInStatusBar")
+            }
             allConfigs.append(custom)
         }
         
         providers = allConfigs
+        needsTitleUpdate = true
     }
     
     func saveProvider(_ config: ProviderConfig) {
@@ -216,10 +241,14 @@ final class TokenTrackerViewModel: ObservableObject {
         
         // Save enabled state
         UserDefaults.standard.set(config.isEnabled, forKey: "provider_\(config.id)_enabled")
-        
+
+        // Save status bar visibility
+        UserDefaults.standard.set(config.showInStatusBar, forKey: "provider_\(config.id)_showInStatusBar")
+
         // Update in-memory list
         if let index = providers.firstIndex(where: { $0.id == config.id }) {
             providers[index] = config
+            needsTitleUpdate = true
         }
     }
     
@@ -230,6 +259,7 @@ final class TokenTrackerViewModel: ObservableObject {
             saved.isBuiltIn = false
             providers.append(saved)
             saveProvider(saved)
+            needsTitleUpdate = true
         } catch {
             print("Failed to save custom provider: \(error)")
         }
@@ -248,10 +278,18 @@ final class TokenTrackerViewModel: ObservableObject {
         guard let index = providers.firstIndex(where: { $0.id == config.id }) else { return }
         providers[index].isEnabled.toggle()
         UserDefaults.standard.set(providers[index].isEnabled, forKey: "provider_\(config.id)_enabled")
-        
+        needsTitleUpdate = true
+
         if providers[index].isEnabled {
             Task { await fetchUsage(for: providers[index]) }
         }
+    }
+
+    func toggleShowInStatusBar(_ config: ProviderConfig) {
+        guard let index = providers.firstIndex(where: { $0.id == config.id }) else { return }
+        providers[index].showInStatusBar.toggle()
+        UserDefaults.standard.set(providers[index].showInStatusBar, forKey: "provider_\(config.id)_showInStatusBar")
+        needsTitleUpdate = true
     }
 
     func setAllProvidersEnabled(_ enabled: Bool) {
@@ -261,6 +299,7 @@ final class TokenTrackerViewModel: ObservableObject {
                 providers[index].isEnabled = enabled
                 UserDefaults.standard.set(enabled, forKey: "provider_\(providers[index].id)_enabled")
                 didChange = true
+                needsTitleUpdate = true
             }
         }
 
@@ -272,31 +311,56 @@ final class TokenTrackerViewModel: ObservableObject {
     // MARK: - Data Fetching
     
     func refreshAll() async {
+        // Throttle refreshes: skip if a refresh was recently attempted or is in progress
+        let now = Date()
+        guard !isRefreshing && now.timeIntervalSince(lastRefreshAttempt) > 10 else {
+            return
+        }
+        
+        lastRefreshAttempt = now
         isRefreshing = true
         
-        await withTaskGroup(of: Void.self) { group in
+        // Collect results in a temporary dictionary to avoid intermediate UI updates
+        var newUsageData = usageData
+        
+        await withTaskGroup(of: (String, UsageData).self) { group in
             for provider in enabledProviders {
                 group.addTask { [weak self] in
-                    await self?.fetchUsage(for: provider)
+                    let data = await self?.fetchUsageInternal(for: provider)
+                    return (provider.id, data ?? .error(providerId: provider.id, providerName: provider.displayName, message: "Refresh failed"))
                 }
+            }
+            
+            for await (id, data) in group {
+                newUsageData[id] = data
             }
         }
         
+        // Update published usageData once
+        usageData = newUsageData
+        needsTitleUpdate = true
         lastRefreshTime = Date()
         isRefreshing = false
     }
     
-    func fetchUsage(for config: ProviderConfig) async {
+    /// Internal fetch method that returns the data instead of updating published state
+    private func fetchUsageInternal(for config: ProviderConfig) async -> UsageData {
         do {
-            let data = try await registry.fetchUsage(for: config)
-            usageData[config.id] = data
+            return try await registry.fetchUsage(for: config)
         } catch {
-            usageData[config.id] = UsageData.error(
+            return UsageData.error(
                 providerId: config.id,
                 providerName: config.displayName,
                 message: error.localizedDescription
             )
         }
+    }
+    
+    /// Public fetch method for single provider refresh
+    func fetchUsage(for config: ProviderConfig) async {
+        let data = await fetchUsageInternal(for: config)
+        usageData[config.id] = data
+        needsTitleUpdate = true
     }
     
     // MARK: - Polling

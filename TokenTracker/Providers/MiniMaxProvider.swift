@@ -34,68 +34,82 @@ struct MiniMaxProvider: UsageProvider {
         guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw ProviderError.parseError("Invalid JSON")
         }
-        
-        let nowTimestamp = Date().timeIntervalSince1970
+
+        var breakdowns: [ModelUsage] = []
         var totalBalance: Double = 0
         var totalRemaining: Double = 0
-        var breakdowns: [ModelUsage] = []
-        var refreshExpiryTimestamp: TimeInterval? = makeExpiryTimestamp(fromRemains: json["remains_time"], now: nowTimestamp)
-        
+        var refreshExpiryTimestamp: TimeInterval? = nil
+        var weeklyRefreshExpiryTimestamp: TimeInterval? = nil
+
         // Handle the model_remains array structure
         if let modelRemains = json["model_remains"] as? [[String: Any]] {
-            var modelRefreshExpiryTimestamps: [TimeInterval] = []
+            var modelRefreshTimestamps: [TimeInterval] = []
+            var hasAssignedTotal = false
+            let nowTimestamp = Date().timeIntervalSince1970
+
             for model in modelRemains {
+                let modelName = model["model_name"] as? String ?? "Unknown"
+
+                // current_interval_total_count = 配额总量
+                // current_interval_usage_count = 剩余配额（不是已用！）
                 let total = model["current_interval_total_count"] as? Double ?? Double(model["current_interval_total_count"] as? Int ?? 0)
                 let remaining = model["current_interval_usage_count"] as? Double ?? Double(model["current_interval_usage_count"] as? Int ?? 0)
-                let modelRefreshExpiryTimestamp = makeExpiryTimestamp(fromRemains: model["remains_time"], now: nowTimestamp)
-                
-                totalBalance += total
-                totalRemaining += remaining
-                if let modelRefreshExpiryTimestamp {
-                    modelRefreshExpiryTimestamps.append(modelRefreshExpiryTimestamp)
+                let used = total - remaining
+
+                // Parse reset timestamp from end_time (milliseconds)
+                if let endTime = model["end_time"] as? Double {
+                    modelRefreshTimestamps.append(endTime / 1000)
                 }
-                
-                let used = total >= remaining ? total - remaining : 0
-                let modelName = model["model_name"] as? String ?? "Unknown Model"
-                
+
+                // Parse weekly reset time: weekly_remains_time is a duration in milliseconds
+                var weeklyResetTimestamp: TimeInterval? = nil
+                if let weeklyRemainsMs = model["weekly_remains_time"] as? Double {
+                    weeklyResetTimestamp = nowTimestamp + (weeklyRemainsMs / 1000)
+                    // Take the first one's weekly reset timestamp
+                    if weeklyRefreshExpiryTimestamp == nil {
+                        weeklyRefreshExpiryTimestamp = weeklyResetTimestamp
+                    }
+                }
+
+                // Totals: all models share the same quota pool, only take the first one's values
+                if !hasAssignedTotal && total > 0 {
+                    totalBalance = total
+                    totalRemaining = remaining
+                    hasAssignedTotal = true
+                }
+
                 breakdowns.append(ModelUsage(
                     modelName: modelName,
                     inputTokens: 0,
                     outputTokens: 0,
                     cost: used,
-                    totalQuota: total > 0 ? total : nil,
-                    remainingQuota: total > 0 ? remaining : nil,
-                    refreshExpiryTimestamp: modelRefreshExpiryTimestamp
+                    totalQuota: total,
+                    remainingQuota: remaining,
+                    refreshExpiryTimestamp: (model["end_time"] as? Double).map { $0 / 1000 },
+                    weeklyRefreshExpiryTimestamp: weeklyResetTimestamp
                 ))
             }
-            if refreshExpiryTimestamp == nil {
-                refreshExpiryTimestamp = modelRefreshExpiryTimestamps.min()
+
+            // Use the nearest reset time
+            if let nearestReset = modelRefreshTimestamps.min(), nearestReset > Date().timeIntervalSince1970 {
+                refreshExpiryTimestamp = nearestReset
             }
         } else {
             // Fallback for their other possible API structures
             totalBalance = extractDouble(from: json, keyPath: "data.total_balance")
                 ?? extractDouble(from: json, keyPath: "total_balance")
                 ?? 0
-            
+
             let remaining = extractDouble(from: json, keyPath: "data.available_balance")
                 ?? extractDouble(from: json, keyPath: "available_balance")
                 ?? extractDouble(from: json, keyPath: "data.remaining")
                 ?? totalBalance
-                
+
             totalRemaining = remaining
         }
-        if refreshExpiryTimestamp == nil {
-            refreshExpiryTimestamp = makeExpiryTimestamp(fromRemains:
-                extractDouble(from: json, keyPath: "data.remains_time")
-                    ?? extractDouble(from: json, keyPath: "remains_time"),
-                now: nowTimestamp
-            )
-        }
-        
-        // used = total - remaining
-        let totalUsed = totalBalance >= totalRemaining ? totalBalance - totalRemaining : 0
-        
-        // MiniMax coding plan values are quota counts, not monetary amounts.
+
+        let totalUsed = totalBalance - totalRemaining
+
         return UsageData(
             providerId: config.id,
             providerName: config.displayName,
@@ -105,8 +119,9 @@ struct MiniMaxProvider: UsageProvider {
             currency: "单位",
             totalQuota: totalBalance > 0 ? totalBalance : nil,
             usedAmount: totalUsed > 0 ? totalUsed : nil,
-            remainingBalance: totalBalance > 0 ? totalRemaining : nil,
+            remainingBalance: totalRemaining > 0 ? totalRemaining : nil,
             refreshExpiryTimestamp: refreshExpiryTimestamp,
+            weeklyRefreshExpiryTimestamp: weeklyRefreshExpiryTimestamp,
             modelBreakdown: breakdowns.sorted { $0.cost > $1.cost },
             fetchedAt: Date(),
             errorMessage: nil,

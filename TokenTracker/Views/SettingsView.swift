@@ -8,6 +8,7 @@ struct SettingsView: View {
     @State private var selectedProviderId: String?
     @State private var providerSearch = ""
     @State private var showEnabledOnly = false
+    @State private var showClaudeLogin = false
     @Environment(\.dismiss) private var dismiss
 
     private var filteredProviders: [ProviderConfig] {
@@ -42,6 +43,14 @@ struct SettingsView: View {
         .frame(minWidth: 720, minHeight: 560, alignment: .topLeading)
         .sheet(isPresented: $viewModel.showAddProvider) {
             AddProviderView(viewModel: viewModel)
+        }
+        .sheet(isPresented: $showClaudeLogin) {
+            if let selectedId = selectedProviderId,
+               let index = viewModel.providers.firstIndex(where: { $0.id == selectedId }) {
+                ClaudeLoginView(sessionKey: $viewModel.providers[index].apiKey, onFinished: {
+                    viewModel.saveProvider(viewModel.providers[index])
+                })
+            }
         }
     }
     
@@ -116,7 +125,7 @@ struct SettingsView: View {
                     }
                     .padding(8)
                 }
-                .frame(minWidth: 200, maxWidth: 320)
+                .frame(minWidth: 180, idealWidth: 220, maxWidth: 260)
 
                 // Detail panel
                 if let selectedId = selectedProviderId,
@@ -210,20 +219,52 @@ struct SettingsView: View {
                         .cornerRadius(10)
                 }
 
+                // Status bar toggle
+                HStack {
+                    Toggle("在状态栏展示", isOn: Binding(
+                        get: { config.showInStatusBar },
+                        set: { _ in
+                            viewModel.toggleShowInStatusBar(config)
+                        }
+                    ))
+                    .toggleStyle(.switch)
+                    .controlSize(.small)
+                    Spacer()
+                }
+                .padding(.horizontal, 4)
+
                 GroupBox("连接配置") {
                     VStack(alignment: .leading, spacing: 10) {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("API Key")
+                            Text(config.providerType == .claudeWeb ? "Session Key (Cookie)" : "API Key")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            SecureField("输入 API Key", text: $viewModel.providers[index].apiKey)
+                            SecureField(config.providerType == .claudeWeb ? "输入 session_key (来自 Cookie)" : "输入 API Key", text: $viewModel.providers[index].apiKey)
                                 .textFieldStyle(.roundedBorder)
                                 .onChange(of: viewModel.providers[index].apiKey) { _, _ in
                                     viewModel.saveProvider(viewModel.providers[index])
                                 }
+                            
+                            if config.providerType == .claudeWeb {
+                                Text("此项非 API Key，请登录 claude.ai 从浏览器 Cookie 中获取 session_key 的值。")
+                                    .font(.system(size: 10))
+                                    .foregroundColor(.secondary)
+                                    .padding(.top, 2)
+                            }
                         }
 
                         HStack {
+                            if config.providerType == .claudeWeb {
+                                Button(action: {
+                                    showClaudeLogin = true
+                                }) {
+                                    Label("登录并自动获取", systemImage: "safari")
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .controlSize(.small)
+                                .padding(.top, 4)
+                            }
+
                             Button("测试连接 API") {
                                 Task { await viewModel.fetchUsage(for: viewModel.providers[index]) }
                             }
@@ -266,9 +307,24 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         if let usage = viewModel.usageData[config.id] {
                             if let error = usage.errorMessage {
-                                Label(error, systemImage: "exclamationmark.triangle")
-                                    .font(.caption)
-                                    .foregroundColor(.orange)
+                                HStack {
+                                    Label(error, systemImage: "exclamationmark.triangle")
+                                        .font(.caption)
+                                        .foregroundColor(.orange)
+                                        .textSelection(.enabled)
+                                    
+                                    Spacer()
+                                    
+                                    Button(action: {
+                                        NSPasteboard.general.clearContents()
+                                        NSPasteboard.general.setString(error, forType: .string)
+                                    }) {
+                                        Image(systemName: "doc.on.doc")
+                                            .font(.caption2)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .help("复制错误信息")
+                                }
                             } else {
                                 Label("已连接 ✓", systemImage: "checkmark.circle")
                                     .font(.caption)
@@ -363,6 +419,8 @@ struct SettingsView: View {
                         viewModel.setLaunchAtLogin(newValue)
                     }
                 ))
+
+                Toggle("显示状态栏图标", isOn: $viewModel.showStatusBar)
             }
             
             Section("自定义 Provider 配置目录") {
@@ -390,5 +448,126 @@ struct SettingsView: View {
         }
         .formStyle(.grouped)
         .padding()
+    }
+}
+
+// MARK: - Claude Login Components
+
+import WebKit
+
+struct ClaudeLoginView: View {
+    @Binding var sessionKey: String
+    var onFinished: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header
+            VStack(spacing: 12) {
+                Image(systemName: "person.badge.key.fill")
+                    .font(.system(size: 44))
+                    .foregroundStyle(.orange.gradient)
+                
+                Text("配置 Claude Pro 会话")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Text("安全地从浏览器中提取 Session Key 以同步用量")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.top, 40)
+            .padding(.bottom, 30)
+            
+            Divider()
+                .padding(.horizontal, 40)
+            
+            // Steps
+            VStack(alignment: .leading, spacing: 28) {
+                StepRow(number: "1", title: "点击进入官网", description: "在浏览器登录 claude.ai 并停留在主页。") {
+                    if let url = URL(string: "https://claude.ai") {
+                        NSWorkspace.shared.open(url)
+                    }
+                }
+                
+                StepRow(number: "2", title: "提取数据", description: "按 F12 -> Application -> Cookies -> https://claude.ai，找到并双击复制 'session_key'。")
+            }
+            .padding(40)
+            
+            Spacer()
+            
+            // Input Area
+            VStack(spacing: 16) {
+                HStack(spacing: 12) {
+                    Image(systemName: "keyboard")
+                        .foregroundColor(.orange)
+                    
+                    SecureField("在此粘贴 sk-ant-sid01-...", text: $sessionKey)
+                        .textFieldStyle(.plain)
+                        .padding(10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.orange.opacity(0.3), lineWidth: 1.5)
+                        )
+                }
+                .padding(.horizontal, 40)
+                
+                HStack(spacing: 20) {
+                    Button("取消") { dismiss() }
+                        .buttonStyle(.plain)
+                        .foregroundColor(.secondary)
+                    
+                    Button("保存并关闭") {
+                        onFinished()
+                        dismiss()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.orange)
+                    .disabled(sessionKey.isEmpty)
+                    .frame(width: 120)
+                }
+            }
+            .padding(.bottom, 40)
+        }
+        .frame(width: 520, height: 500)
+        .background(Color(NSColor.windowBackgroundColor))
+    }
+}
+
+private struct StepRow: View {
+    let number: String
+    let title: String
+    let description: String
+    var action: (() -> Void)? = nil
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 18) {
+            Text(number)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.white)
+                .frame(width: 26, height: 26)
+                .background(Circle().fill(Color.orange.gradient))
+            
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    Text(title)
+                        .font(.headline)
+                    
+                    if let action = action {
+                        Button(action: action) {
+                            Image(systemName: "arrow.up.right.square")
+                                .foregroundColor(.blue)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                
+                Text(description)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .lineSpacing(2)
+            }
+        }
     }
 }

@@ -20,11 +20,9 @@ TokenTracker 是一款 macOS 菜单栏应用，用于聚合查询和展示各 AI
 
 | Provider | 支持状态 |
 |----------|---------|
-| OpenAI | ✅ 自动 |
-| DeepSeek | ✅ 自动 |
-| MiniMax | ✅ 自动 |
-| Anthropic | 📝 手动 |
-| Gemini | 📝 手动 |
+| OpenAI | ✅ |
+| DeepSeek | ✅ |
+| MiniMax | ✅ |
 | 自定义 API | ✅ |
 
 ## 环境要求

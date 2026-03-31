@@ -48,6 +48,7 @@ struct ProviderCardView: View {
                 Text(error)
                     .font(.caption2)
                     .foregroundColor(.orange)
+                    .textSelection(.enabled)
             }
             
             // Token counts
@@ -84,26 +85,31 @@ struct ProviderCardView: View {
                     .frame(height: 6)
                     
                     HStack {
-                        if !isMiniMax {
-                            Text(percentage.formattedPercentage)
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                        }
-                        
+                        Text(percentage.formattedPercentage)
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+
                         Spacer()
-                        
-                        if let remaining = usage.remainingBalance, let total = usage.totalQuota {
-                            Text("\(formatBalance(remaining)) / \(formatBalance(total))")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                                .monospacedDigit()
+
+                        if let total = usage.totalQuota {
+                            if let used = usage.usedAmount, used > 0 {
+                                Text("已用 \(formatBalance(used)) / \(formatBalance(total))")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                                    .monospacedDigit()
+                            } else if let remaining = usage.remainingBalance {
+                                Text("剩余 \(formatBalance(remaining)) / \(formatBalance(total))")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                                    .monospacedDigit()
+                            }
                         } else {
                             if let remaining = usage.remainingBalance {
                                 Text("剩余: \(remaining.formattedCurrency(usage.currency))")
                                     .font(.caption2)
                                     .foregroundColor(.secondary)
                             }
-                            
+
                             if let total = usage.totalQuota {
                                 Text("/ \(total.formattedCurrency(usage.currency))")
                                     .font(.caption2)
@@ -116,10 +122,17 @@ struct ProviderCardView: View {
                 HStack {
                     Spacer()
                     if let total = usage.totalQuota {
-                        Text("\(formatBalance(remaining)) / \(formatBalance(total))")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                            .monospacedDigit()
+                        if let used = usage.usedAmount, used > 0 {
+                            Text("已用 \(formatBalance(used)) / \(formatBalance(total))")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                                .monospacedDigit()
+                        } else {
+                            Text("剩余 \(formatBalance(remaining)) / \(formatBalance(total))")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                                .monospacedDigit()
+                        }
                     } else {
                         Text("剩余余额: \(remaining.formattedCurrency(usage.currency))")
                             .font(.caption2)
@@ -132,7 +145,18 @@ struct ProviderCardView: View {
                 HStack {
                     Spacer()
                     TimelineView(.periodic(from: .now, by: 1.0)) { context in
-                        Text(resetCountdownText(expiryTimestamp: refreshExpiryTimestamp, now: context.date))
+                        Text("重置:" + resetCountdownText(expiryTimestamp: refreshExpiryTimestamp, now: context.date))
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                            .monospacedDigit()
+                    }
+                }
+            }
+            if let weeklyRefreshExpiryTimestamp = usage.weeklyRefreshExpiryTimestamp {
+                HStack {
+                    Spacer()
+                    TimelineView(.periodic(from: .now, by: 1.0)) { context in
+                        Text("周重置:" + resetCountdownText(expiryTimestamp: weeklyRefreshExpiryTimestamp, now: context.date))
                             .font(.caption2)
                             .foregroundColor(.secondary)
                             .monospacedDigit()
@@ -174,7 +198,8 @@ struct ProviderCardView: View {
                                         .foregroundColor(.primary)
                                     Spacer()
                                     if (model.totalQuota ?? 0) > 0, let remaining = modelRemaining(model), let total = model.totalQuota {
-                                        Text("\(formatBalance(remaining)) / \(formatBalance(total))")
+                                        let used = max(total - remaining, 0)
+                                        Text("已用 \(formatBalance(used)) / \(formatBalance(total))")
                                             .font(.caption2)
                                             .foregroundColor(.secondary)
                                             .monospacedDigit()
@@ -188,7 +213,16 @@ struct ProviderCardView: View {
 
                                 if let refreshExpiryTimestamp = model.refreshExpiryTimestamp {
                                     TimelineView(.periodic(from: .now, by: 1.0)) { context in
-                                        Text(resetCountdownText(expiryTimestamp: refreshExpiryTimestamp, now: context.date))
+                                        Text("重置:" + resetCountdownText(expiryTimestamp: refreshExpiryTimestamp, now: context.date))
+                                            .font(.system(size: 9))
+                                            .foregroundColor(.secondary)
+                                            .monospacedDigit()
+                                    }
+                                }
+
+                                if let weeklyRefreshExpiryTimestamp = model.weeklyRefreshExpiryTimestamp {
+                                    TimelineView(.periodic(from: .now, by: 1.0)) { context in
+                                        Text("周重置:" + resetCountdownText(expiryTimestamp: weeklyRefreshExpiryTimestamp, now: context.date))
                                             .font(.system(size: 9))
                                             .foregroundColor(.secondary)
                                             .monospacedDigit()
@@ -221,7 +255,8 @@ struct ProviderCardView: View {
                                         .frame(height: 3)
                                         
                                         if let remaining = modelRemaining(model) {
-                                            Text("\(formatBalance(remaining)) / \(formatBalance(total))")
+                                            let used = max(total - remaining, 0)
+                                            Text("已用 \(formatBalance(used)) / \(formatBalance(total))")
                                                 .font(.system(size: 9))
                                                 .foregroundColor(.secondary)
                                                 .monospacedDigit()
@@ -267,7 +302,7 @@ struct ProviderCardView: View {
 
     private var isCurrencyQuota: Bool {
         let currency = usage.currency
-        return !currency.isEmpty && currency != "Tokens" && !currency.contains("单位") && !currency.contains("额度")
+        return !currency.isEmpty && currency != "Tokens" && currency != "Percent" && !currency.contains("单位") && !currency.contains("额度")
     }
 
     private func formatBalance(_ value: Double) -> String {
@@ -291,11 +326,11 @@ struct ProviderCardView: View {
     private func resetCountdownText(expiryTimestamp: TimeInterval, now: Date) -> String {
         let remainingSeconds = max(Int(expiryTimestamp - now.timeIntervalSince1970), 0)
         if remainingSeconds == 0 {
-            return "重置时间已到"
+            return "已到"
         }
         let roundedMinutes = Int(ceil(Double(remainingSeconds) / 60.0))
         let hours = roundedMinutes / 60
         let minutes = roundedMinutes % 60
-        return "重置时间:\(hours)小时\(minutes)分钟后"
+        return "\(hours)小时\(minutes)分钟"
     }
 }
