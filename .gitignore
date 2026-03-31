@@ -10,3 +10,4 @@ TokenTracker.xcodeproj/xcuserdata/
 *.dSYM
 dist/
 *.log
+typescript
