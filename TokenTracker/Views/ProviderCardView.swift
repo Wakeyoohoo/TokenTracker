@@ -145,6 +145,7 @@ struct ProviderCardView: View {
             if let refreshExpiryTimestamp = usage.refreshExpiryTimestamp {
                 HStack {
                     Spacer()
+                    // 优化：当面板隐藏时，通过 .id() 强制销毁并重新挂载，从而真正释放 TimelineView 的内部计时器
                     if viewModel.isPopoverVisible {
                         TimelineView(.periodic(from: .now, by: 60.0)) { context in
                             Text("重置:" + resetCountdownText(expiryTimestamp: refreshExpiryTimestamp, now: context.date))
@@ -152,6 +153,7 @@ struct ProviderCardView: View {
                                 .foregroundColor(.secondary)
                                 .monospacedDigit()
                         }
+                        .id("TimelineView-Main-\(config.id)")
                     } else {
                         Text("重置:" + resetCountdownText(expiryTimestamp: refreshExpiryTimestamp, now: Date()))
                             .font(.caption2)
@@ -170,6 +172,7 @@ struct ProviderCardView: View {
                                 .foregroundColor(.secondary)
                                 .monospacedDigit()
                         }
+                        .id("TimelineView-Weekly-\(config.id)")
                     } else {
                         Text("周重置:" + resetCountdownText(expiryTimestamp: weeklyRefreshExpiryTimestamp, now: Date()))
                             .font(.caption2)
@@ -234,6 +237,7 @@ struct ProviderCardView: View {
                                                 .foregroundColor(.secondary)
                                                 .monospacedDigit()
                                         }
+                                        .id("TimelineView-ModelReset-\(model.id)")
                                     } else {
                                         Text("重置:" + resetCountdownText(expiryTimestamp: refreshExpiryTimestamp, now: Date()))
                                             .font(.system(size: 9))
@@ -250,6 +254,7 @@ struct ProviderCardView: View {
                                                 .foregroundColor(.secondary)
                                                 .monospacedDigit()
                                         }
+                                        .id("TimelineView-ModelWeekly-\(model.id)")
                                     } else {
                                         Text("周重置:" + resetCountdownText(expiryTimestamp: weeklyRefreshExpiryTimestamp, now: Date()))
                                             .font(.system(size: 9))

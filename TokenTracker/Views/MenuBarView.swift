@@ -34,6 +34,8 @@ struct MenuBarView: View {
                     .padding(.vertical, 8)
                 }
                 .frame(maxHeight: 400)
+                // 优化：当面板不可见时，禁用 ScrollView 交互和潜在更新
+                .allowsHitTesting(viewModel.isPopoverVisible)
             }
             
             Divider()
@@ -42,6 +44,8 @@ struct MenuBarView: View {
             footerView
         }
         .frame(width: 380)
+        // 关键优化：给整个视图一个 ID，随可见性改变而重置，强制释放资源
+        .id("MenuBarMainView-\(viewModel.isPopoverVisible)")
     }
     
     // MARK: - Header
@@ -85,11 +89,18 @@ struct MenuBarView: View {
             Button(action: {
                 Task { await viewModel.refreshAll() }
             }) {
-                HStack(spacing: 4) {
-                    Image(systemName: viewModel.isRefreshing ? "arrow.triangle.2.circlepath" : "arrow.clockwise")
-                        .font(.caption)
-                        .rotationEffect(.degrees(viewModel.isRefreshing ? 360 : 0))
-                        .animation(viewModel.isRefreshing && viewModel.isPopoverVisible ? .linear(duration: 1).repeatForever(autoreverses: false) : .default, value: viewModel.isRefreshing)
+                HStack(spacing: 6) {
+                    // 优化：仅在刷新且可见时显示动画图标，否则显示静止图标
+                    if viewModel.isRefreshing && viewModel.isPopoverVisible {
+                        Image(systemName: "arrow.triangle.2.circlepath")
+                            .font(.caption)
+                            .rotationEffect(.degrees(viewModel.isRefreshing ? 360 : 0))
+                            .animation(.linear(duration: 1).repeatForever(autoreverses: false), value: viewModel.isRefreshing)
+                    } else {
+                        Image(systemName: "arrow.clockwise")
+                            .font(.caption)
+                    }
+                    
                     if let time = viewModel.lastRefreshTime {
                         Text(time.shortTimeString)
                             .font(.caption)
