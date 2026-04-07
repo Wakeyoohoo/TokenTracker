@@ -2,6 +2,7 @@ import SwiftUI
 
 /// Card view for a single provider showing usage, tokens, quota progress
 struct ProviderCardView: View {
+    @ObservedObject var viewModel: TokenTrackerViewModel
     let config: ProviderConfig
     let usage: UsageData
     
@@ -144,8 +145,15 @@ struct ProviderCardView: View {
             if let refreshExpiryTimestamp = usage.refreshExpiryTimestamp {
                 HStack {
                     Spacer()
-                    TimelineView(.periodic(from: .now, by: 1.0)) { context in
-                        Text("重置:" + resetCountdownText(expiryTimestamp: refreshExpiryTimestamp, now: context.date))
+                    if viewModel.isPopoverVisible {
+                        TimelineView(.periodic(from: .now, by: 60.0)) { context in
+                            Text("重置:" + resetCountdownText(expiryTimestamp: refreshExpiryTimestamp, now: context.date))
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                                .monospacedDigit()
+                        }
+                    } else {
+                        Text("重置:" + resetCountdownText(expiryTimestamp: refreshExpiryTimestamp, now: Date()))
                             .font(.caption2)
                             .foregroundColor(.secondary)
                             .monospacedDigit()
@@ -155,8 +163,15 @@ struct ProviderCardView: View {
             if let weeklyRefreshExpiryTimestamp = usage.weeklyRefreshExpiryTimestamp {
                 HStack {
                     Spacer()
-                    TimelineView(.periodic(from: .now, by: 1.0)) { context in
-                        Text("周重置:" + resetCountdownText(expiryTimestamp: weeklyRefreshExpiryTimestamp, now: context.date))
+                    if viewModel.isPopoverVisible {
+                        TimelineView(.periodic(from: .now, by: 60.0)) { context in
+                            Text("周重置:" + resetCountdownText(expiryTimestamp: weeklyRefreshExpiryTimestamp, now: context.date))
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                                .monospacedDigit()
+                        }
+                    } else {
+                        Text("周重置:" + resetCountdownText(expiryTimestamp: weeklyRefreshExpiryTimestamp, now: Date()))
                             .font(.caption2)
                             .foregroundColor(.secondary)
                             .monospacedDigit()
@@ -212,8 +227,15 @@ struct ProviderCardView: View {
                                 }
 
                                 if let refreshExpiryTimestamp = model.refreshExpiryTimestamp {
-                                    TimelineView(.periodic(from: .now, by: 1.0)) { context in
-                                        Text("重置:" + resetCountdownText(expiryTimestamp: refreshExpiryTimestamp, now: context.date))
+                                    if viewModel.isPopoverVisible {
+                                        TimelineView(.periodic(from: .now, by: 60.0)) { context in
+                                            Text("重置:" + resetCountdownText(expiryTimestamp: refreshExpiryTimestamp, now: context.date))
+                                                .font(.system(size: 9))
+                                                .foregroundColor(.secondary)
+                                                .monospacedDigit()
+                                        }
+                                    } else {
+                                        Text("重置:" + resetCountdownText(expiryTimestamp: refreshExpiryTimestamp, now: Date()))
                                             .font(.system(size: 9))
                                             .foregroundColor(.secondary)
                                             .monospacedDigit()
@@ -221,8 +243,15 @@ struct ProviderCardView: View {
                                 }
 
                                 if let weeklyRefreshExpiryTimestamp = model.weeklyRefreshExpiryTimestamp {
-                                    TimelineView(.periodic(from: .now, by: 1.0)) { context in
-                                        Text("周重置:" + resetCountdownText(expiryTimestamp: weeklyRefreshExpiryTimestamp, now: context.date))
+                                    if viewModel.isPopoverVisible {
+                                        TimelineView(.periodic(from: .now, by: 60.0)) { context in
+                                            Text("周重置:" + resetCountdownText(expiryTimestamp: weeklyRefreshExpiryTimestamp, now: context.date))
+                                                .font(.system(size: 9))
+                                                .foregroundColor(.secondary)
+                                                .monospacedDigit()
+                                        }
+                                    } else {
+                                        Text("周重置:" + resetCountdownText(expiryTimestamp: weeklyRefreshExpiryTimestamp, now: Date()))
                                             .font(.system(size: 9))
                                             .foregroundColor(.secondary)
                                             .monospacedDigit()

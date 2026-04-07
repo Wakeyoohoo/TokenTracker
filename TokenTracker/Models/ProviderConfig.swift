@@ -81,10 +81,8 @@ enum ProviderType: String, Codable, CaseIterable {
     
     var supportsAutoFetch: Bool {
         switch self {
-        case .openAI, .deepSeek, .miniMax, .custom, .anthropic, .claudeWeb, .claudeCLI:
+        case .openAI, .deepSeek, .miniMax, .custom, .anthropic, .claudeWeb, .claudeCLI, .gemini:
             return true
-        case .gemini:
-            return false
         }
     }
 }

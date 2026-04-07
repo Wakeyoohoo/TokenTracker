@@ -20,9 +20,10 @@ struct MenuBarView: View {
                     VStack(spacing: 8) {
                         ForEach(viewModel.enabledProviders) { config in
                             if let usage = viewModel.usageData[config.id] {
-                                ProviderCardView(config: config, usage: usage)
+                                ProviderCardView(viewModel: viewModel, config: config, usage: usage)
                             } else {
                                 ProviderCardView(
+                                    viewModel: viewModel,
                                     config: config,
                                     usage: .empty(providerId: config.id, providerName: config.displayName)
                                 )
@@ -88,7 +89,7 @@ struct MenuBarView: View {
                     Image(systemName: viewModel.isRefreshing ? "arrow.triangle.2.circlepath" : "arrow.clockwise")
                         .font(.caption)
                         .rotationEffect(.degrees(viewModel.isRefreshing ? 360 : 0))
-                        .animation(viewModel.isRefreshing ? .linear(duration: 1).repeatForever(autoreverses: false) : .default, value: viewModel.isRefreshing)
+                        .animation(viewModel.isRefreshing && viewModel.isPopoverVisible ? .linear(duration: 1).repeatForever(autoreverses: false) : .default, value: viewModel.isRefreshing)
                     if let time = viewModel.lastRefreshTime {
                         Text(time.shortTimeString)
                             .font(.caption)

@@ -274,39 +274,52 @@ struct ClaudeWebProvider: UsageProvider {
 @MainActor
 class ClaudeWebScanner: NSObject, WKNavigationDelegate {
     static let shared = ClaudeWebScanner()
-    
+
     private var webView: WKWebView?
     private var continuation: CheckedContinuation<Data, Error>?
-    
+
     // Simple cache to avoid redundant heavy loads
     private var cache: [URL: (data: Data, timestamp: Date)] = [:]
     private let cacheTTL: TimeInterval = 30 // 30 seconds
-    
+
     private override init() {
         super.init()
+    }
+
+    private func getOrCreateWebView() -> WKWebView {
+        if let wv = self.webView {
+            return wv
+        }
         let config = WKWebViewConfiguration()
         config.websiteDataStore = .nonPersistent()
-        
-        let webView = WKWebView(frame: .zero, configuration: config)
-        webView.navigationDelegate = self
+
+        let wv = WKWebView(frame: .zero, configuration: config)
+        wv.navigationDelegate = self
         // Set a realistic user agent
-        webView.customUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
-        self.webView = webView
+        wv.customUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+        self.webView = wv
+        return wv
     }
-    
+
+    private func cleanupWebView() {
+        self.webView?.stopLoading()
+        self.webView?.navigationDelegate = nil
+        self.webView = nil
+    }
+
     func fetch(url: URL, sessionKey: String) async throws -> Data {
         // 1. Check cache first
         if let entry = cache[url], Date().timeIntervalSince(entry.timestamp) < cacheTTL {
             return entry.data
         }
-        
+
         // Ensure only one fetch at a time
         if continuation != nil {
             throw NSError(domain: "ClaudeWebScanner", code: -2, userInfo: [NSLocalizedDescriptionKey: "A fetch is already in progress"])
         }
-        
-        let cookieStore = webView!.configuration.websiteDataStore.httpCookieStore
-        
+
+        let wv = getOrCreateWebView()
+        let cookieStore = wv.configuration.websiteDataStore.httpCookieStore
         // Clear existing session_key if any
         let cookies = await cookieStore.allCookies()
         for c in cookies where c.name == "session_key" {
@@ -359,7 +372,7 @@ class ClaudeWebScanner: NSObject, WKNavigationDelegate {
             request.setValue("en-US,en;q=0.9", forHTTPHeaderField: "Accept-Language")
             request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36", forHTTPHeaderField: "User-Agent")
             
-            webView?.load(request)
+            wv.load(request)
             
             // Timeout safety (20s)
             Task {
@@ -367,7 +380,7 @@ class ClaudeWebScanner: NSObject, WKNavigationDelegate {
                 if self.continuation != nil {
                     self.continuation?.resume(throwing: NSError(domain: "ClaudeWebScanner", code: -3, userInfo: [NSLocalizedDescriptionKey: "WebView request timed out"]))
                     self.continuation = nil
-                    self.webView?.stopLoading()
+                    self.cleanupWebView()
                 }
             }
         }
@@ -424,6 +437,7 @@ class ClaudeWebScanner: NSObject, WKNavigationDelegate {
                     self.continuation?.resume(throwing: NSError(domain: "ClaudeWebScanner", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法从网页中提取文本内容"]))
                 }
                 self.continuation = nil
+                self.cleanupWebView()
             }
         }
     }
@@ -432,6 +446,7 @@ class ClaudeWebScanner: NSObject, WKNavigationDelegate {
         if continuation != nil {
             continuation?.resume(throwing: error)
             continuation = nil
+            cleanupWebView()
         }
     }
     
@@ -439,6 +454,7 @@ class ClaudeWebScanner: NSObject, WKNavigationDelegate {
         if continuation != nil {
             continuation?.resume(throwing: error)
             continuation = nil
+            cleanupWebView()
         }
     }
 }

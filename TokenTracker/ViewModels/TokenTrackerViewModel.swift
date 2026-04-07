@@ -9,6 +9,7 @@ final class TokenTrackerViewModel: ObservableObject {
     @Published var providers: [ProviderConfig] = []
     @Published var usageData: [String: UsageData] = [:]  // keyed by provider id
     @Published var isRefreshing = false
+    @Published var isPopoverVisible = false
     @Published var lastRefreshTime: Date?
     @Published var showSettings = false
     @Published var showAddProvider = false
@@ -96,16 +97,19 @@ final class TokenTrackerViewModel: ObservableObject {
             )
         }
 
-        let blocks = allBlocks
+        // Limit to top 4 providers to keep the status bar at a reasonable length
+        let blocks = Array(allBlocks.prefix(4))
 
         guard !blocks.isEmpty else { return "TT" }
         let blockSeparator = "  "
         let columnSeparator = " "
+        
         let line1 = blocks.map { block in
             pad(block.providerTop, to: block.providerWidth)
                 + columnSeparator
                 + pad(block.topDetail, to: block.detailWidth)
         }.joined(separator: blockSeparator)
+        
         let line2 = blocks.map { block in
             pad(block.providerBottom, to: block.providerWidth)
                 + columnSeparator

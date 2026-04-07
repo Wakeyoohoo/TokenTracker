@@ -18,7 +18,7 @@ struct TokenTrackerApp: App {
 }
 
 @MainActor
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     var statusItem: NSStatusItem!
     var popover: NSPopover!
     var viewModel = TokenTrackerViewModel.shared
@@ -29,6 +29,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         popover = NSPopover()
         popover.contentSize = NSSize(width: 380, height: 450)
         popover.behavior = .transient
+        popover.delegate = self
         
         // Use a hosting controller to hold our SwiftUI view
         let hostingController = NSHostingController(rootView: MenuBarView(viewModel: viewModel))
@@ -102,7 +103,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 .baselineOffset: -4
             ]
 
-            let titleLeftPadding = "  "
+            let titleLeftPadding = ""
             let paddedTitle = title
                 .split(separator: "\n", omittingEmptySubsequences: false)
                 .map { titleLeftPadding + String($0) }
@@ -116,9 +117,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 with: NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude),
                 options: [.usesLineFragmentOrigin, .usesFontLeading]
             ).width)
-            let textPadding: CGFloat = 16
-            let maxWidth: CGFloat = 165
-            let minWidth: CGFloat = 70
+            let textPadding: CGFloat = 4
+            let maxWidth: CGFloat = 350
+            let minWidth: CGFloat = 30
             self.statusItem.length = min(max(measuredWidth + textPadding, minWidth), maxWidth)
         }
     }
@@ -142,5 +143,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         return false
+    }
+
+    // MARK: - NSPopoverDelegate
+
+    func popoverWillShow(_ notification: Notification) {
+        viewModel.isPopoverVisible = true
+    }
+
+    func popoverDidClose(_ notification: Notification) {
+        viewModel.isPopoverVisible = false
     }
 }

@@ -15,20 +15,21 @@ TokenTracker 是一款原生的 macOS 状态栏应用，用于聚合查询和统
 由于此项目为源码级交付并采用了新的 SwiftUI+AppKit 混合架构开发，请跟随下面简单的步骤自行编译应用：
 
 ### 环境要求
+
 - macOS 14.0 或更高版本 (Sonoma+)
 - Xcode 15 或更高版本
 
 ### 编译步骤
 
-1. **打开项目**
-   在终端进入项目根目录并在 Xcode 中打开项目：
+1. **打开项目**在终端进入项目根目录并在 Xcode 中打开项目：
+
    ```bash
-   cd /Users/wakeyoo/workspace/ai-tools/TokenTracker
+   cd ~/workspace/ai-tools/TokenTracker
    open TokenTracker.xcodeproj
    ```
 
-2. **配置签名 (Signing)**
-   为了让 App 能够在你的电脑上运行并顺畅读取 Keychain：
+2. **配置签名 (Signing**)为了让 App 能够在你的电脑上运行并顺畅读取 Keychain：
+
    - 在 Xcode 左侧边栏点击工程文件 `TokenTracker` (带有蓝色图标那个)
    - 在主界面点击 `TokenTracker` Target
    - 选择顶部的 **Signing & Capabilities** 选项卡
@@ -36,19 +37,22 @@ TokenTracker 是一款原生的 macOS 状态栏应用，用于聚合查询和统
    - 在 **Team** 下拉列表中，选择你自己的 Apple ID 或 Development Team。
 
 3. **编译并运行 (Build and Run)**
+
    - 按下快捷键 `Cmd + R` (或者点击左上角的 `▶` 播放按钮)。
    - 首次运行如果弹出访问钥匙串 (Keychain) 权限申请，请选择**允许**。
 
 ### 开发构建
 
 1. 构建
+
 ```bash
-killall TokenTracker ; cd /Users/wakeyoo/workspace/ai-tools/TokenTracker && xcodebuild -project TokenTracker.xcodeproj -scheme TokenTracker -configuration Debug build 2>&1 | tail -20
+killall TokenTracker ; cd ~/workspace/ai-tools/TokenTracker && xcodebuild -project TokenTracker.xcodeproj -scheme TokenTracker -configuration Debug build 2>&1 | tail -20
 ```
 
 2. 打开 Debug 产物
+
 ```bash
-open /Users/wakeyoo/Library/Developer/Xcode/DerivedData/TokenTracker-fjxhpvrukxcmclgerzhuczgxfcbq/Build/Products/Debug/TokenTracker.app
+open ~/Library/Developer/Xcode/DerivedData/TokenTracker-fjxhpvrukxcmclgerzhuczgxfcbq/Build/Products/Debug/TokenTracker.app
 ```
 
 ### 将应用移动到应用程序文件夹 (可选)
@@ -63,17 +67,24 @@ open /Users/wakeyoo/Library/Developer/Xcode/DerivedData/TokenTracker-fjxhpvrukxc
 ## 使用指引
 
 1. 启动应用后，点击屏幕右上角菜单栏出现的 `📊 TT` 图标。
+
 2. 点击应用面板右下角的 **⚙ 齿轮图标** 打开设置面板（**注意：关闭设置面板不会退出程序，程序由于监控进程的需求，是在后台常驻的**）。
+
 3. 在左侧的 **Providers** 列表中，找到你需要启用的平台，打开右上角的开关。
+
 4. 填入对应的 `API Key`，点击 **测试连接**。若看到绿色的“已连接 ✓”，则说明配置成功。
+
 5. 如需添加系统**未内置**的提供商（如第三方聚合 API 站），你可以点击左下角的 `+ 添加自定义`，跟随表单填写 URL 和字段映射。在 `General` 面板还可以查看到底层的自定义配置文件存储目录。
 
-7. **Claude.ai (Web Session) 特殊说明**：
+6. **Claude.ai (Web Session) 特殊说明**：
+
    - 对于没有 API Key 的 Claude Pro 用户，可以选择 `Claude.ai (Web)` 提供商。
    - 在 `API Key` 输入框中填入你从浏览器开发者工具中获取的 `session_key` Cookie。
-   - 获取方法：登录 `claude.ai` -> 打开开发者工具 (F12) -> Application -> Cookies -> 复制 `session_key` 的值。
+   - 获取方法：登录 `claude.ai` -&gt; 打开开发者工具 (F12) -&gt; Application -&gt; Cookies -&gt; 复制 `session_key` 的值。
 
 ## 退出应用
+
 当你需要关闭应用时：
+
 1. 请点击菜单栏上的 `📊 TT` 图标打开下拉面板。
 2. 点击右下角的 **电源图标 ⏻** 即可彻底退出应用和后台轮询服务。
