@@ -11,3 +11,5 @@ TokenTracker.xcodeproj/xcuserdata/
 dist/
 *.log
 typescript
+scripts/.idea/*
+TokenTracker.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings

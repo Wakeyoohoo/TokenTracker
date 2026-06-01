@@ -10,7 +10,7 @@ struct MiniMaxProvider: UsageProvider {
         }
         
         // Try the coding plan endpoint first
-        let url = URL(string: "https://api.minimaxi.com/v1/api/openplatform/coding_plan/remains")!
+        let url = URL(string: "https://www.minimaxi.com/v1/token_plan/remains")!
         var request = URLRequest(url: url)
         request.setValue("Bearer \(config.apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -50,10 +50,11 @@ struct MiniMaxProvider: UsageProvider {
             for model in modelRemains {
                 let modelName = model["model_name"] as? String ?? "Unknown"
 
-                // current_interval_total_count = 配额总量
-                // current_interval_usage_count = 剩余配额（不是已用！）
-                let total = model["current_interval_total_count"] as? Double ?? Double(model["current_interval_total_count"] as? Int ?? 0)
-                let remaining = model["current_interval_usage_count"] as? Double ?? Double(model["current_interval_usage_count"] as? Int ?? 0)
+                // current_interval_remaining_percent = 剩余百分比（分子 0-100），分母隐含 100
+                let remainingPercent = model["current_interval_remaining_percent"] as? Double
+                    ?? Double(model["current_interval_remaining_percent"] as? Int ?? 0)
+                let total: Double = 100
+                let remaining = remainingPercent
                 let used = total - remaining
 
                 // Parse reset timestamp from end_time (milliseconds)
